@@ -1,0 +1,8 @@
+/src/
+/test/
+/config/
+/coverage/
+/node_modules/
+/jest.config.js
+/.gitignore
+/.tsconfig.json

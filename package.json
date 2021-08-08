@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "An layout algorithm about the exentric labeling interaction technique",
   "main": "dist/index.js",
+  "url": "https://github.com/VirusPC/excentric-labeling",
+  "email": "cheng.peng.helloworld@gmail.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/npm/cli.git"
+    "url": "https://github.com/VirusPC/excentric-labeling"
   },
   "directories": {
     "test": "test"
