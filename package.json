@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "An layout algorithm about the exentric labeling interaction technique",
   "main": "dist/index.js",
+  "types": "",
   "url": "https://github.com/VirusPC/excentric-labeling",
   "email": "cheng.peng.helloworld@gmail.com",
   "repository": {

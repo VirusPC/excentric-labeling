@@ -2,9 +2,10 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "jsx": "react",
+    "declaration": true,
     "module": "commonjs",
     "noImplicitAny": true,
-    "outDir": "./build/",
+    "outDir": "./dist/@types",
     "preserveConstEnums": true,
     "removeComments": true,
     "sourceMap": true,
@@ -14,6 +15,5 @@
   },
   "include": [
     "./src/",
-    "./test/"
   ]
 }
