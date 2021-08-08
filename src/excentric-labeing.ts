@@ -23,7 +23,7 @@ type LayoutInfo = {
     rawInfo: RawInfo
 };
 
-export default function exentricLabeling(){
+export default function exentricLabeling() {
     let maxLabelsNum = 10;
     let radius = 20;
     let verticallyCoherent = true;
@@ -33,12 +33,12 @@ export default function exentricLabeling(){
     let leftSpace = 20;
     let rightSpace = 20;
 
-    function computeExentricLabelingLayout(cx: number, cy: number): LayoutInfo[]{
+    function computeExentricLabelingLayout(cx: number, cy: number): LayoutInfo[] {
         let filteredRawInfos = filterObjInLens(rawInfos, cx, cy, radius);
         filteredRawInfos = filterObjWithMaxNumber(filteredRawInfos, maxLabelsNum);
         const layoutInfos = initLayoutInfos(filteredRawInfos);
         computeStartPoints(layoutInfos);
-        if(!verticallyCoherent){
+        if (!verticallyCoherent) {
             computePointsOnLens(layoutInfos, cx, cy, radius);
         }
         dividedIntoLeftOrRight(layoutInfos, cx, cy);
@@ -48,56 +48,86 @@ export default function exentricLabeling(){
         return layoutInfos;
     }
 
-    computeExentricLabelingLayout.verticallyCoherent = (_: boolean) => {
-        verticallyCoherent = _;
-        return computeExentricLabelingLayout;
+    computeExentricLabelingLayout.verticallyCoherent = function (_?: boolean) {
+        if (_ !== undefined) {
+            verticallyCoherent = _;
+            return computeExentricLabelingLayout;
+        }
+        return verticallyCoherent;
     };
     computeExentricLabelingLayout.horizontallyCoherent = (_: boolean) => {
-        horizontallyCoherent= _;
-        return computeExentricLabelingLayout;
+        if (_ !== undefined) {
+            horizontallyCoherent = _;
+            return computeExentricLabelingLayout;
+        }
+        return verticallyCoherent;
     };
-    computeExentricLabelingLayout.radial= (_: boolean) => {
-        verticallyCoherent = !_;
-        return computeExentricLabelingLayout;
+    computeExentricLabelingLayout.radial = (_: boolean) => {
+        if (_ !== undefined) {
+            verticallyCoherent = !_;
+            return computeExentricLabelingLayout;
+        }
+        return verticallyCoherent;
     };
     computeExentricLabelingLayout.maxLabelsNum = (_: number) => {
-        maxLabelsNum = _;
-        return computeExentricLabelingLayout;
+        if (_ !== undefined) {
+            maxLabelsNum = _;
+            return computeExentricLabelingLayout;
+        }
+        return maxLabelsNum;
     };
     computeExentricLabelingLayout.radius = (_: number) => {
-        radius= _;
-        return computeExentricLabelingLayout;
+        if (_ !== undefined) {
+            radius = _;
+            return computeExentricLabelingLayout;
+        }
+        return radius;
     };
     computeExentricLabelingLayout.rawInfos = (_: RawInfo[]) => {
-        rawInfos = _;
-        return computeExentricLabelingLayout;
+        if (_ !== undefined) {
+            rawInfos = _;
+            return computeExentricLabelingLayout;
+        }
+        return rawInfos;
     };
     computeExentricLabelingLayout.labelsSpace = (_: number) => {
-        labelsSpace = _;
-        return computeExentricLabelingLayout;
+        if (_ !== undefined) {
+            labelsSpace = _;
+            return computeExentricLabelingLayout;
+        }
+        return labelsSpace;
     };
     computeExentricLabelingLayout.leftSpace = (_: number) => {
-        leftSpace = _;
-        return computeExentricLabelingLayout;
+        if (_ !== undefined) {
+            leftSpace = _;
+            return computeExentricLabelingLayout;
+        }
+        return labelsSpace
     };
     computeExentricLabelingLayout.rightSpace = (_: number) => {
-        rightSpace = _;
-        return computeExentricLabelingLayout;
+        if (_ !== undefined) {
+            rightSpace = _;
+            return computeExentricLabelingLayout;
+        }
+        return rightSpace;
     };
     computeExentricLabelingLayout.leftAndRightSpace = (_: number) => {
-        rightSpace = _;
-        leftSpace = _;
-        return computeExentricLabelingLayout;
+        if (_ !== undefined) {
+            rightSpace = _;
+            leftSpace = _;
+            return computeExentricLabelingLayout;
+        }
+        return [leftSpace, rightSpace];
     };
 
     return computeExentricLabelingLayout;
 }
 
-function filterObjInLens(rawInfos: RawInfo[], cx: number, cy: number, r: number){
+function filterObjInLens(rawInfos: RawInfo[], cx: number, cy: number, r: number) {
     return rawInfos.filter(rawInfo => Math.sqrt((rawInfo.x - cx) ** 2 + (rawInfo.y - cy) ** 2) <= r);
 }
 
-function filterObjWithMaxNumber(rawInfos: RawInfo[], maxLabelsNum: number){
+function filterObjWithMaxNumber(rawInfos: RawInfo[], maxLabelsNum: number) {
     return rawInfos.slice(0, maxLabelsNum);
 }
 
@@ -106,7 +136,7 @@ function initLayoutInfos(rawInfos: RawInfo[]): LayoutInfo[] {
 }
 
 function initLayoutInfo(rawInfo: RawInfo): LayoutInfo {
-    const { x, y,  labelWidth, labelHeight } = rawInfo
+    const { x, y, labelWidth, labelHeight } = rawInfo
     return {
         x, y,
         //name: labelName,
@@ -161,7 +191,7 @@ function computeMiddlePoints(layoutInfos: LayoutInfo[], cx: number, cy: number, 
                 labelY += layoutInfos[i - 1].labelBBox.height + labelsSpace;
             }
             layoutInfo.controlPoints.push({
-                x: left ? cx - r - leftSpace: cx + r + rightSpace,
+                x: left ? cx - r - leftSpace : cx + r + rightSpace,
                 y: labelY + (layoutInfo.labelBBox.height >> 1)
             });
         });
@@ -176,7 +206,7 @@ function computeEndPoints(layoutInfos: LayoutInfo[], cx: number, horizontallyCoh
 
     if (layoutInfosLeft.length > 0) computeOneSide(layoutInfosLeft, true);
     if (layoutInfosRight.length > 0) computeOneSide(layoutInfosRight, false);
-    if(horizontallyCoherent) moveHorizontally(layoutInfos);
+    if (horizontallyCoherent) moveHorizontally(layoutInfos);
 
     function computeOneSide(layoutInfosOneSide: LayoutInfo[], left: boolean) {
         const maxWidth = computeMaxLabelWidth(layoutInfosOneSide);
@@ -190,9 +220,9 @@ function computeEndPoints(layoutInfos: LayoutInfo[], cx: number, horizontallyCoh
             })
         });
     }
-    function moveHorizontally(layoutInfos: LayoutInfo[]){
+    function moveHorizontally(layoutInfos: LayoutInfo[]) {
         layoutInfos.forEach(layoutInfo => {
-            const endControlPoint = layoutInfo.controlPoints[layoutInfo.controlPoints.length-1];
+            const endControlPoint = layoutInfo.controlPoints[layoutInfo.controlPoints.length - 1];
             endControlPoint.x += layoutInfo.x - cx;
         })
     }
@@ -207,7 +237,7 @@ function dividedIntoLeftOrRight(layoutInfos: LayoutInfo[], cx: number, cy: numbe
 function computeLabelBBox(layoutInfos: LayoutInfo[]) {
     layoutInfos.forEach(layoutInfo => {
         const bbox = layoutInfo.labelBBox;
-        const lastControlPoint = layoutInfo.controlPoints[layoutInfo.controlPoints.length-1];
+        const lastControlPoint = layoutInfo.controlPoints[layoutInfo.controlPoints.length - 1];
         bbox.x = lastControlPoint.x + (layoutInfo.left ? -bbox.width : 0);
         bbox.y = lastControlPoint.y - (layoutInfo.labelBBox.height >> 1);
     });
