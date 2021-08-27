@@ -1,6 +1,6 @@
 {
   "name": "excentric-labeling",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An layout algorithm about the exentric labeling interaction technique",
   "main": "dist/index.js",
   "types": "dist/@types/index.d.ts",
@@ -25,7 +25,6 @@
   ],
   "author": "cheng peng",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.15.0",
     "@types/jest": "^26.0.24",

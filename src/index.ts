@@ -1,2 +1,2 @@
-import exentricLabeling from "./excentric-labeing";
-export default exentricLabeling;
+import excentricLabeling from "./excentric-labeling";
+export default excentricLabeling;

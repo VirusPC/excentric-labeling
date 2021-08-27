@@ -23,7 +23,7 @@ type LayoutInfo = {
     rawInfo: RawInfo
 };
 
-export default function exentricLabeling() {
+export default function excentricLabeling() {
     let maxLabelsNum = 10;
     let radius = 20;
     let verticallyCoherent = true;
@@ -33,7 +33,7 @@ export default function exentricLabeling() {
     let leftSpace = 20;
     let rightSpace = 20;
 
-    function computeExentricLabelingLayout(cx: number, cy: number): LayoutInfo[] {
+    function computeExcentricLabelingLayout(cx: number, cy: number): LayoutInfo[] {
         let filteredRawInfos = filterObjInLens(rawInfos, cx, cy, radius);
         filteredRawInfos = filterObjWithMaxNumber(filteredRawInfos, maxLabelsNum);
         const layoutInfos = initLayoutInfos(filteredRawInfos);
@@ -48,79 +48,79 @@ export default function exentricLabeling() {
         return layoutInfos;
     }
 
-    computeExentricLabelingLayout.verticallyCoherent = function (_?: boolean) {
+    computeExcentricLabelingLayout.verticallyCoherent = function (_?: boolean) {
         if (_ !== undefined) {
             verticallyCoherent = _;
-            return computeExentricLabelingLayout;
+            return computeExcentricLabelingLayout;
         }
         return verticallyCoherent;
     };
-    computeExentricLabelingLayout.horizontallyCoherent = (_: boolean) => {
+    computeExcentricLabelingLayout.horizontallyCoherent = (_: boolean) => {
         if (_ !== undefined) {
             horizontallyCoherent = _;
-            return computeExentricLabelingLayout;
+            return computeExcentricLabelingLayout;
         }
         return verticallyCoherent;
     };
-    computeExentricLabelingLayout.radial = (_: boolean) => {
+    computeExcentricLabelingLayout.radial = (_: boolean) => {
         if (_ !== undefined) {
             verticallyCoherent = !_;
-            return computeExentricLabelingLayout;
+            return computeExcentricLabelingLayout;
         }
         return verticallyCoherent;
     };
-    computeExentricLabelingLayout.maxLabelsNum = (_: number) => {
+    computeExcentricLabelingLayout.maxLabelsNum = (_: number) => {
         if (_ !== undefined) {
             maxLabelsNum = _;
-            return computeExentricLabelingLayout;
+            return computeExcentricLabelingLayout;
         }
         return maxLabelsNum;
     };
-    computeExentricLabelingLayout.radius = (_: number) => {
+    computeExcentricLabelingLayout.radius = (_: number) => {
         if (_ !== undefined) {
             radius = _;
-            return computeExentricLabelingLayout;
+            return computeExcentricLabelingLayout;
         }
         return radius;
     };
-    computeExentricLabelingLayout.rawInfos = (_: RawInfo[]) => {
+    computeExcentricLabelingLayout.rawInfos = (_: RawInfo[]) => {
         if (_ !== undefined) {
             rawInfos = _;
-            return computeExentricLabelingLayout;
+            return computeExcentricLabelingLayout;
         }
         return rawInfos;
     };
-    computeExentricLabelingLayout.labelsSpace = (_: number) => {
+    computeExcentricLabelingLayout.labelsSpace = (_: number) => {
         if (_ !== undefined) {
             labelsSpace = _;
-            return computeExentricLabelingLayout;
+            return computeExcentricLabelingLayout;
         }
         return labelsSpace;
     };
-    computeExentricLabelingLayout.leftSpace = (_: number) => {
+    computeExcentricLabelingLayout.leftSpace = (_: number) => {
         if (_ !== undefined) {
             leftSpace = _;
-            return computeExentricLabelingLayout;
+            return computeExcentricLabelingLayout;
         }
         return labelsSpace
     };
-    computeExentricLabelingLayout.rightSpace = (_: number) => {
+    computeExcentricLabelingLayout.rightSpace = (_: number) => {
         if (_ !== undefined) {
             rightSpace = _;
-            return computeExentricLabelingLayout;
+            return computeExcentricLabelingLayout;
         }
         return rightSpace;
     };
-    computeExentricLabelingLayout.leftAndRightSpace = (_: number) => {
+    computeExcentricLabelingLayout.leftAndRightSpace = (_: number) => {
         if (_ !== undefined) {
             rightSpace = _;
             leftSpace = _;
-            return computeExentricLabelingLayout;
+            return computeExcentricLabelingLayout;
         }
         return [leftSpace, rightSpace];
     };
 
-    return computeExentricLabelingLayout;
+    return computeExcentricLabelingLayout;
 }
 
 function filterObjInLens(rawInfos: RawInfo[], cx: number, cy: number, r: number) {

@@ -3,13 +3,13 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react",
     "declaration": true,
-    "module": "commonjs",
+    "module": "CommonJS",
     "noImplicitAny": true,
     "outDir": "./dist/@types",
     "preserveConstEnums": true,
     "removeComments": true,
     "sourceMap": true,
-    "target": "es5",
+    "target": "ES5",
     "downlevelIteration": true,               /* Provide full support for iterables in 'for-of', spread, and destructuring when targeting 'ES5' or 'ES3'. */
 
   },
