@@ -13,3 +13,13 @@ test("test verticallyCoherent", () => {
     a.verticallyCoherent(false);
     expect(a.verticallyCoherent()).toBe(false);
 })
+
+test("test equivalent", () => {
+    const a = excentricLabeling();
+    a.verticallyCoherent(true);
+    const b = excentricLabeling();
+    b.verticallyCoherent(false);
+    expect(a.verticallyCoherent()).toBe(true);
+})
+
+function a({a:a}){}

@@ -1,9 +1,9 @@
 type RawInfo = {
     x: number,
     y: number,
-    //labelName: string,
-    labelWidth: number,
-    labelHeight: number
+    labelWidth?: number,  // Optional. If setted, it will override the settings of the computor
+    labelHeight?: number, // Optional. If setted, it will override the settings of the computor
+    [redundantProp: string]: any,
 };
 
 type ControlPoint = { x: number, y: number };
@@ -11,8 +11,7 @@ type ControlPoint = { x: number, y: number };
 type LayoutInfo = {
     x: number,
     y: number,
-    //name: string,
-    left: boolean,
+    left: boolean,  // indicate if label on the left or right
     controlPoints: ControlPoint[],
     labelBBox: {
         x: number,
@@ -23,102 +22,164 @@ type LayoutInfo = {
     rawInfo: RawInfo
 };
 
-export default function excentricLabeling() {
-    let maxLabelsNum = 10;
-    let radius = 20;
-    let verticallyCoherent = true;
-    let horizontallyCoherent = false;
-    let rawInfos: RawInfo[] = [];
-    let labelsSpace = 3;
-    let leftSpace = 20;
-    let rightSpace = 20;
+// Since the following types facilitate developer to write code but users cannot read param and return types directly
+// we remove these helper types
+// type GetParamFunc<T> =  () => T;
+// type SetParamFunc<T> =  (param: T) => T;
+// type GetOrSetParamFunc<T> = GetParamFunc<T> & SetParamFunc<T>;
 
-    function computeExcentricLabelingLayout(cx: number, cy: number): LayoutInfo[] {
-        let filteredRawInfos = filterObjInLens(rawInfos, cx, cy, radius);
-        filteredRawInfos = filterObjWithMaxNumber(filteredRawInfos, maxLabelsNum);
-        const layoutInfos = initLayoutInfos(filteredRawInfos);
+interface Computor {
+    (rawInfos: RawInfo[], cx: number, cy: number): LayoutInfo[];
+    labelWidth: (() => number)
+        & ((size: number) => Computor);
+    labelHeight: (() => number)
+        & ((size: number) => Computor);
+    radius: (() => number)
+        & ((radius: number) => Computor);
+    maxLabelsNum: (() => number)
+        & ((maxLabelsNum: number) => Computor);
+    verticallyCoherent: (() => boolean)
+        & ((verticallyCoherent: boolean) => Computor);
+    horizontallyCoherent: (() => boolean)
+        & ((horizontallyCoherent: boolean) => Computor);
+    spaceBetweenLabels: (() => number)
+        & ((spaceBetweenLabels: number) => Computor);
+    leftSpace: (() => number)
+        & ((space: number) => Computor);
+    rightSpace: (() => number)
+        & ((space: number) => Computor);
+    leftAndRightSpace: (() => [number, number])
+        & ((space: number) => Computor) 
+        & ((space: [number, number]) => Computor);
+}
+
+/**
+ * A dynamic technique to label a neighborhood of objects located around the cursor.
+ * Paper link: https://dl.acm.org/doi/abs/10.1145/302979.303148
+ * @returns Computed position for each label
+ */
+export default function excentricLabeling(): Computor {
+    let _radius = 20;
+    let _maxLabelsNum = 10;
+    let _verticallyCoherent = true;
+    let _horizontallyCoherent = false;
+    let _spaceBetweenLabels = 3;
+    let _leftSpace = 20;
+    let _rightSpace = 20;
+    let _labelWidth = 20;
+    let _labelHeight = 10;
+
+    const computeExcentricLabelingLayout: Computor = (rawInfos: RawInfo[], cx: number, cy: number) => {
+        let filteredRawInfos = filterObjInLens(rawInfos, cx, cy, _radius);
+        filteredRawInfos = filterObjWithMaxNumber(filteredRawInfos, _maxLabelsNum);
+        const layoutInfos = initLayoutInfos(filteredRawInfos, _labelWidth, _labelHeight);
         computeStartPoints(layoutInfos);
-        if (!verticallyCoherent) {
-            computePointsOnLens(layoutInfos, cx, cy, radius);
+        if (!_verticallyCoherent) {
+            computePointsOnLens(layoutInfos, cx, cy, _radius);
         }
         dividedIntoLeftOrRight(layoutInfos, cx, cy);
-        computeMiddlePoints(layoutInfos, cx, cy, radius, labelsSpace, leftSpace, rightSpace);
-        computeEndPoints(layoutInfos, cx, horizontallyCoherent);
+        computeMiddlePoints(layoutInfos, cx, cy, _radius, _spaceBetweenLabels, _leftSpace, _rightSpace);
+        computeEndPoints(layoutInfos, cx, _horizontallyCoherent);
         computeLabelBBox(layoutInfos);
         return layoutInfos;
     }
 
-    computeExcentricLabelingLayout.verticallyCoherent = function (_?: boolean) {
-        if (_ !== undefined) {
-            verticallyCoherent = _;
-            return computeExcentricLabelingLayout;
-        }
-        return verticallyCoherent;
+    function labelWidth(): number;
+    function labelWidth(labelWidth: number): Computor;
+    function labelWidth(labelWidth?: number) {
+        if (labelWidth === undefined) return _labelWidth;
+        _labelWidth = labelWidth;
+        return computeExcentricLabelingLayout;
     };
-    computeExcentricLabelingLayout.horizontallyCoherent = (_: boolean) => {
-        if (_ !== undefined) {
-            horizontallyCoherent = _;
-            return computeExcentricLabelingLayout;
-        }
-        return verticallyCoherent;
+
+    function labelHeight(): number;
+    function labelHeight(labelHeight: number): Computor;
+    function labelHeight(labelHeight?: number) {
+        if (labelHeight === undefined) return _labelHeight;
+        _labelHeight = labelHeight;
+        return computeExcentricLabelingLayout;
     };
-    computeExcentricLabelingLayout.radial = (_: boolean) => {
-        if (_ !== undefined) {
-            verticallyCoherent = !_;
-            return computeExcentricLabelingLayout;
-        }
-        return verticallyCoherent;
+
+    function radius(): number;
+    function radius(radius: number): Computor;
+    function radius(radius?: number) {
+        if (radius === undefined) return _radius;
+        _radius = radius;
+        return computeExcentricLabelingLayout;
     };
-    computeExcentricLabelingLayout.maxLabelsNum = (_: number) => {
-        if (_ !== undefined) {
-            maxLabelsNum = _;
-            return computeExcentricLabelingLayout;
-        }
-        return maxLabelsNum;
+
+    function maxLabelsNum(): number;
+    function maxLabelsNum(maxLabelsNum: number): Computor;
+    function maxLabelsNum(maxLabelsNum?: number) {
+        if (maxLabelsNum === undefined) return _maxLabelsNum;
+        _maxLabelsNum = maxLabelsNum;
+        return computeExcentricLabelingLayout;
     };
-    computeExcentricLabelingLayout.radius = (_: number) => {
-        if (_ !== undefined) {
-            radius = _;
-            return computeExcentricLabelingLayout;
-        }
-        return radius;
+
+    function verticallyCoherent(): boolean;
+    function verticallyCoherent(verticallyCoherent: boolean): Computor;
+    function verticallyCoherent(verticallyCoherent?: boolean) {
+        if (verticallyCoherent === undefined) return _verticallyCoherent;
+        _verticallyCoherent = verticallyCoherent;
+        return computeExcentricLabelingLayout;
     };
-    computeExcentricLabelingLayout.rawInfos = (_: RawInfo[]) => {
-        if (_ !== undefined) {
-            rawInfos = _;
-            return computeExcentricLabelingLayout;
-        }
-        return rawInfos;
+
+    function horizontallyCoherent(): boolean;
+    function horizontallyCoherent(horizontallyCoherent: boolean): Computor;
+    function horizontallyCoherent(horizontallyCoherent?: boolean) {
+        if (horizontallyCoherent === undefined) return _horizontallyCoherent;
+        _horizontallyCoherent = horizontallyCoherent;
+        return computeExcentricLabelingLayout;
     };
-    computeExcentricLabelingLayout.labelsSpace = (_: number) => {
-        if (_ !== undefined) {
-            labelsSpace = _;
-            return computeExcentricLabelingLayout;
-        }
-        return labelsSpace;
+
+    function spaceBetweenLabels(): number;
+    function spaceBetweenLabels(spaceBetweenLabels: number): Computor;
+    function spaceBetweenLabels(spaceBetweenLabels?: number) {
+        if (spaceBetweenLabels === undefined) return _spaceBetweenLabels;
+        _spaceBetweenLabels = spaceBetweenLabels;
+        return computeExcentricLabelingLayout;
     };
-    computeExcentricLabelingLayout.leftSpace = (_: number) => {
-        if (_ !== undefined) {
-            leftSpace = _;
-            return computeExcentricLabelingLayout;
-        }
-        return labelsSpace
+
+    function leftSpace(): number;
+    function leftSpace(leftSpace: number): Computor;
+    function leftSpace(leftSpace?: number) {
+        if (leftSpace === undefined) return _leftSpace;
+        _leftSpace = leftSpace;
+        return computeExcentricLabelingLayout;
     };
-    computeExcentricLabelingLayout.rightSpace = (_: number) => {
-        if (_ !== undefined) {
-            rightSpace = _;
-            return computeExcentricLabelingLayout;
-        }
-        return rightSpace;
+
+    function rightSpace(): number;
+    function rightSpace(rightSpace: number): Computor;
+    function rightSpace(rightSpace?: number) {
+        if (rightSpace === undefined) return _rightSpace;
+        _rightSpace = rightSpace;
+        return computeExcentricLabelingLayout;
     };
-    computeExcentricLabelingLayout.leftAndRightSpace = (_: number) => {
-        if (_ !== undefined) {
-            rightSpace = _;
-            leftSpace = _;
-            return computeExcentricLabelingLayout;
+
+    function leftAndRightSpace(): [number, number];
+    function leftAndRightSpace(space: number): Computor;
+    function leftAndRightSpace(space: [number, number]): Computor;
+    function leftAndRightSpace(space?: number | [number, number]) {
+        if (space === undefined) return [_leftSpace, _rightSpace];
+        if (typeof space === "number") {
+            _leftSpace = space;
+            _rightSpace = space;
+        } else {
+            [_spaceBetweenLabels, _rightSpace] = space;
         }
-        return [leftSpace, rightSpace];
+        return computeExcentricLabelingLayout;
     };
+
+    computeExcentricLabelingLayout.radius = radius;
+    computeExcentricLabelingLayout.maxLabelsNum = maxLabelsNum;
+    computeExcentricLabelingLayout.labelWidth = labelWidth;
+    computeExcentricLabelingLayout.labelHeight = labelHeight;
+    computeExcentricLabelingLayout.verticallyCoherent = verticallyCoherent;
+    computeExcentricLabelingLayout.horizontallyCoherent = horizontallyCoherent;
+    computeExcentricLabelingLayout.spaceBetweenLabels = spaceBetweenLabels;
+    computeExcentricLabelingLayout.leftSpace = leftSpace;
+    computeExcentricLabelingLayout.rightSpace = rightSpace;
+    computeExcentricLabelingLayout.leftAndRightSpace = leftAndRightSpace;
 
     return computeExcentricLabelingLayout;
 }
@@ -131,11 +192,11 @@ function filterObjWithMaxNumber(rawInfos: RawInfo[], maxLabelsNum: number) {
     return rawInfos.slice(0, maxLabelsNum);
 }
 
-function initLayoutInfos(rawInfos: RawInfo[]): LayoutInfo[] {
-    return rawInfos.map(initLayoutInfo);
+function initLayoutInfos(rawInfos: RawInfo[], _labelWidth: number, _labelHeight: number): LayoutInfo[] {
+    return rawInfos.map((rawInfo) => initLayoutInfo(rawInfo, _labelWidth, _labelHeight));
 }
 
-function initLayoutInfo(rawInfo: RawInfo): LayoutInfo {
+function initLayoutInfo(rawInfo: RawInfo, _labelWidth: number, _labelHeight: number): LayoutInfo {
     const { x, y, labelWidth, labelHeight } = rawInfo
     return {
         x, y,
@@ -143,7 +204,10 @@ function initLayoutInfo(rawInfo: RawInfo): LayoutInfo {
         controlPoints: [],
         left: true,
         labelBBox: {
-            x: 0, y: 0, width: labelWidth, height: labelHeight,
+            x: 0,
+            y: 0,
+            width: labelWidth ?? _labelWidth,
+            height: labelHeight ?? _labelHeight,
         },
         rawInfo: rawInfo
     }
@@ -171,24 +235,24 @@ function computePointsOnLens(layoutInfos: LayoutInfo[], cx: number, cy: number, 
     }
 }
 
-function computeMiddlePoints(layoutInfos: LayoutInfo[], cx: number, cy: number, r: number, labelsSpace: number, leftSpace: number, rightSpace: number): void {
+function computeMiddlePoints(layoutInfos: LayoutInfo[], cx: number, cy: number, r: number, spaceBetweenLabels: number, leftSpace: number, rightSpace: number): void {
     const sortAccordingY = (li1: LayoutInfo, li2: LayoutInfo) => li1.controlPoints[li1.controlPoints.length - 1].y - li2.controlPoints[li2.controlPoints.length - 1].y;
-    const computeSpaceHeight = (layoutInfos: LayoutInfo[], labelsSpace: number) => layoutInfos.reduce((acc, layoutInfo) => acc + layoutInfo.labelBBox.height, 0) + labelsSpace * (layoutInfos.length - 1);
+    const computeSpaceHeight = (layoutInfos: LayoutInfo[], spaceBetweenLabels: number) => layoutInfos.reduce((acc, layoutInfo) => acc + layoutInfo.labelBBox.height, 0) + spaceBetweenLabels * (layoutInfos.length - 1);
 
     const layoutInfosLeft: LayoutInfo[] = [];
     const layoutInfosRight: LayoutInfo[] = [];
     layoutInfos.forEach(layoutInfo => layoutInfo.left ? layoutInfosLeft.push(layoutInfo) : layoutInfosRight.push(layoutInfo));
 
-    if (layoutInfosLeft.length > 0) computeOneSide(layoutInfosLeft, labelsSpace, true);
-    if (layoutInfosRight.length > 0) computeOneSide(layoutInfosRight, labelsSpace, false);
+    if (layoutInfosLeft.length > 0) computeOneSide(layoutInfosLeft, spaceBetweenLabels, true);
+    if (layoutInfosRight.length > 0) computeOneSide(layoutInfosRight, spaceBetweenLabels, false);
 
-    function computeOneSide(layoutInfosOneSide: LayoutInfo[], labelsSpace: number, left: boolean) {
+    function computeOneSide(layoutInfosOneSide: LayoutInfo[], spaceBetweenLabels: number, left: boolean) {
         layoutInfosOneSide.sort(sortAccordingY);
-        const spaceHeight = computeSpaceHeight(layoutInfosOneSide, labelsSpace);
+        const spaceHeight = computeSpaceHeight(layoutInfosOneSide, spaceBetweenLabels);
         let labelY = cy - (spaceHeight / 2)
         layoutInfosOneSide.forEach((layoutInfo, i, layoutInfos) => {
             if (i !== 0) {
-                labelY += layoutInfos[i - 1].labelBBox.height + labelsSpace;
+                labelY += layoutInfos[i - 1].labelBBox.height + spaceBetweenLabels;
             }
             layoutInfo.controlPoints.push({
                 x: left ? cx - r - leftSpace : cx + r + rightSpace,
