@@ -4,9 +4,11 @@ A layout algorithm about excentric labeling.
 
 Paper link: https://dl.acm.org/doi/abs/10.1145/302979.303148
 
+![demo](https://github.com/viruspc/excentric-labeling/blob/gh-pages/readme-images/demo.png)
+
 ## Usage
 
-Example:
+### Example
 
 ```ts
 import excentricLabeling from "excent";
@@ -23,7 +25,9 @@ computor.labelWidth(20)
 const result= computor(rawData, x, y)
 ```
 
-Input: `RawInfo[]`, the position of points. User can specify the width and/or height for the point. Otherwise, the algorithm will use the width and height from settings: `computor.labelWidth(20)`, `computor.labelHeight(10)`.
+### Input
+
+`RawInfo[]`, the position of points. User can specify the width and/or height for the point. Otherwise, the algorithm will use the width and height from settings: `computor.labelWidth(20)`, `computor.labelHeight(10)`.
 
 ```ts
 type RawInfo = {
@@ -35,7 +39,9 @@ type RawInfo = {
 };
 ```
 
-Output: `LayoutInfo[]`
+### Output:
+
+`LayoutInfo[]`
 
 ```ts
 type LayoutInfo = {
@@ -51,6 +57,37 @@ type LayoutInfo = {
     },
     rawInfo: RawInfo
 };
+```
+
+## API
+
+After the computor is created, users can configure it or get configuration information through the following API. If you provide no paramter, it will return the corresponding setting's value. Otherwise, it will set the corresponding setting's value with the given parameter, and return the computor itself to facilitate method chaining.
+
+```ts
+interface Computor {
+    (rawInfos: RawInfo[], cx: number, cy: number): LayoutInfo[];
+    labelWidth: (() => number)
+        & ((size: number) => Computor);
+    labelHeight: (() => number)
+        & ((size: number) => Computor);
+    radius: (() => number)
+        & ((radius: number) => Computor);
+    maxLabelsNum: (() => number)
+        & ((maxLabelsNum: number) => Computor);
+    verticallyCoherent: (() => boolean)
+        & ((verticallyCoherent: boolean) => Computor);
+    horizontallyCoherent: (() => boolean)
+        & ((horizontallyCoherent: boolean) => Computor);
+    spaceBetweenLabels: (() => number)
+        & ((spaceBetweenLabels: number) => Computor);
+    leftSpace: (() => number)
+        & ((space: number) => Computor);
+    rightSpace: (() => number)
+        & ((space: number) => Computor);
+    leftAndRightSpace: (() => [number, number])
+        & ((space: number) => Computor) 
+        & ((space: [number, number]) => Computor);
+}
 ```
 
 ## Notes

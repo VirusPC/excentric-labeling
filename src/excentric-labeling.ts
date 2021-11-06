@@ -6,13 +6,11 @@ type RawInfo = {
     [redundantProp: string]: any,
 };
 
-type ControlPoint = { x: number, y: number };
-
 type LayoutInfo = {
     x: number,
     y: number,
     left: boolean,  // indicate if label on the left or right
-    controlPoints: ControlPoint[],
+    controlPoints: { x:number, y: number}[],
     labelBBox: {
         x: number,
         y: number,
