@@ -4,7 +4,7 @@ A layout algorithm about excentric labeling.
 
 Paper link: https://dl.acm.org/doi/abs/10.1145/302979.303148
 
-![demo](https://github.com/viruspc/excentric-labeling/blob/gh-pages/readme-images/demo.png)
+![demo](https://raw.githubusercontent.com/VirusPC/excentric-labeling/master/readme-images/demo.png)
 
 ## Usage
 
