@@ -5,4 +5,4 @@
 /node_modules/
 /jest.config.js
 /.gitignore
-/.tsconfig.json
+/tsconfig.json

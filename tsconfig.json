@@ -3,7 +3,7 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react",
     "declaration": true,
-    "module": "CommonJS",
+    "module": "commonjs",
     "noImplicitAny": true,
     "outDir": "./dist/@types",
     "preserveConstEnums": true,

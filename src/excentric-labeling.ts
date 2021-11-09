@@ -1,8 +1,8 @@
 type RawInfo = {
     x: number,
     y: number,
-    labelWidth?: number,  // Optional. If setted, it will override the settings of the computor
-    labelHeight?: number, // Optional. If setted, it will override the settings of the computor
+    labelWidth?: number,  // Optional. If setted, it will override the settings of the computer
+    labelHeight?: number, // Optional. If setted, it will override the settings of the computer
     [redundantProp: string]: any,
 };
 
@@ -26,29 +26,30 @@ type LayoutInfo = {
 // type SetParamFunc<T> =  (param: T) => T;
 // type GetOrSetParamFunc<T> = GetParamFunc<T> & SetParamFunc<T>;
 
-interface Computor {
-    (rawInfos: RawInfo[], cx: number, cy: number): LayoutInfo[];
+interface Computer {
+    (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered: boolean): LayoutInfo[];
+    elementsNumInLens: (() => number);
     labelWidth: (() => number)
-        & ((size: number) => Computor);
+        & ((size: number) => Computer);
     labelHeight: (() => number)
-        & ((size: number) => Computor);
+        & ((size: number) => Computer);
     radius: (() => number)
-        & ((radius: number) => Computor);
+        & ((radius: number) => Computer);
     maxLabelsNum: (() => number)
-        & ((maxLabelsNum: number) => Computor);
+        & ((maxLabelsNum: number) => Computer);
     verticallyCoherent: (() => boolean)
-        & ((verticallyCoherent: boolean) => Computor);
+        & ((verticallyCoherent: boolean) => Computer);
     horizontallyCoherent: (() => boolean)
-        & ((horizontallyCoherent: boolean) => Computor);
+        & ((horizontallyCoherent: boolean) => Computer);
     spaceBetweenLabels: (() => number)
-        & ((spaceBetweenLabels: number) => Computor);
+        & ((spaceBetweenLabels: number) => Computer);
     leftSpace: (() => number)
-        & ((space: number) => Computor);
+        & ((space: number) => Computer);
     rightSpace: (() => number)
-        & ((space: number) => Computor);
+        & ((space: number) => Computer);
     leftAndRightSpace: (() => [number, number])
-        & ((space: number) => Computor) 
-        & ((space: [number, number]) => Computor);
+        & ((space: number) => Computer) 
+        & ((space: [number, number]) => Computer);
 }
 
 /**
@@ -56,7 +57,7 @@ interface Computor {
  * Paper link: https://dl.acm.org/doi/abs/10.1145/302979.303148
  * @returns Computed position for each label
  */
-export default function excentricLabeling(): Computor {
+module.exports =  function excentricLabeling(): Computer {
     let _radius = 20;
     let _maxLabelsNum = 10;
     let _verticallyCoherent = true;
@@ -66,10 +67,13 @@ export default function excentricLabeling(): Computor {
     let _rightSpace = 20;
     let _labelWidth = 20;
     let _labelHeight = 10;
+    let _elementsNumInLens = 0;
 
-    const computeExcentricLabelingLayout: Computor = (rawInfos: RawInfo[], cx: number, cy: number) => {
-        let filteredRawInfos = filterObjInLens(rawInfos, cx, cy, _radius);
-        filteredRawInfos = filterObjWithMaxNumber(filteredRawInfos, _maxLabelsNum);
+    const computeExcentricLabelingLayout: Computer = (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered:boolean = false) => {
+        let filteredRawInfos = rawInfos;
+        if(!isInfosFiltered) filteredRawInfos = filterElementsInLens(filteredRawInfos, cx, cy, _radius);
+        _elementsNumInLens = filteredRawInfos.length;
+        filteredRawInfos = filterElementsWithMaxNumber(filteredRawInfos, _maxLabelsNum);
         const layoutInfos = initLayoutInfos(filteredRawInfos, _labelWidth, _labelHeight);
         computeStartPoints(layoutInfos);
         if (!_verticallyCoherent) {
@@ -82,8 +86,12 @@ export default function excentricLabeling(): Computor {
         return layoutInfos;
     }
 
+    function elementsNumInLens(): number{
+        return _elementsNumInLens;
+    }
+
     function labelWidth(): number;
-    function labelWidth(labelWidth: number): Computor;
+    function labelWidth(labelWidth: number): Computer;
     function labelWidth(labelWidth?: number) {
         if (labelWidth === undefined) return _labelWidth;
         _labelWidth = labelWidth;
@@ -91,7 +99,7 @@ export default function excentricLabeling(): Computor {
     };
 
     function labelHeight(): number;
-    function labelHeight(labelHeight: number): Computor;
+    function labelHeight(labelHeight: number): Computer;
     function labelHeight(labelHeight?: number) {
         if (labelHeight === undefined) return _labelHeight;
         _labelHeight = labelHeight;
@@ -99,7 +107,7 @@ export default function excentricLabeling(): Computor {
     };
 
     function radius(): number;
-    function radius(radius: number): Computor;
+    function radius(radius: number): Computer;
     function radius(radius?: number) {
         if (radius === undefined) return _radius;
         _radius = radius;
@@ -107,7 +115,7 @@ export default function excentricLabeling(): Computor {
     };
 
     function maxLabelsNum(): number;
-    function maxLabelsNum(maxLabelsNum: number): Computor;
+    function maxLabelsNum(maxLabelsNum: number): Computer;
     function maxLabelsNum(maxLabelsNum?: number) {
         if (maxLabelsNum === undefined) return _maxLabelsNum;
         _maxLabelsNum = maxLabelsNum;
@@ -115,7 +123,7 @@ export default function excentricLabeling(): Computor {
     };
 
     function verticallyCoherent(): boolean;
-    function verticallyCoherent(verticallyCoherent: boolean): Computor;
+    function verticallyCoherent(verticallyCoherent: boolean): Computer;
     function verticallyCoherent(verticallyCoherent?: boolean) {
         if (verticallyCoherent === undefined) return _verticallyCoherent;
         _verticallyCoherent = verticallyCoherent;
@@ -123,7 +131,7 @@ export default function excentricLabeling(): Computor {
     };
 
     function horizontallyCoherent(): boolean;
-    function horizontallyCoherent(horizontallyCoherent: boolean): Computor;
+    function horizontallyCoherent(horizontallyCoherent: boolean): Computer;
     function horizontallyCoherent(horizontallyCoherent?: boolean) {
         if (horizontallyCoherent === undefined) return _horizontallyCoherent;
         _horizontallyCoherent = horizontallyCoherent;
@@ -131,7 +139,7 @@ export default function excentricLabeling(): Computor {
     };
 
     function spaceBetweenLabels(): number;
-    function spaceBetweenLabels(spaceBetweenLabels: number): Computor;
+    function spaceBetweenLabels(spaceBetweenLabels: number): Computer;
     function spaceBetweenLabels(spaceBetweenLabels?: number) {
         if (spaceBetweenLabels === undefined) return _spaceBetweenLabels;
         _spaceBetweenLabels = spaceBetweenLabels;
@@ -139,7 +147,7 @@ export default function excentricLabeling(): Computor {
     };
 
     function leftSpace(): number;
-    function leftSpace(leftSpace: number): Computor;
+    function leftSpace(leftSpace: number): Computer;
     function leftSpace(leftSpace?: number) {
         if (leftSpace === undefined) return _leftSpace;
         _leftSpace = leftSpace;
@@ -147,7 +155,7 @@ export default function excentricLabeling(): Computor {
     };
 
     function rightSpace(): number;
-    function rightSpace(rightSpace: number): Computor;
+    function rightSpace(rightSpace: number): Computer;
     function rightSpace(rightSpace?: number) {
         if (rightSpace === undefined) return _rightSpace;
         _rightSpace = rightSpace;
@@ -155,8 +163,8 @@ export default function excentricLabeling(): Computor {
     };
 
     function leftAndRightSpace(): [number, number];
-    function leftAndRightSpace(space: number): Computor;
-    function leftAndRightSpace(space: [number, number]): Computor;
+    function leftAndRightSpace(space: number): Computer;
+    function leftAndRightSpace(space: [number, number]): Computer;
     function leftAndRightSpace(space?: number | [number, number]) {
         if (space === undefined) return [_leftSpace, _rightSpace];
         if (typeof space === "number") {
@@ -168,6 +176,7 @@ export default function excentricLabeling(): Computor {
         return computeExcentricLabelingLayout;
     };
 
+    computeExcentricLabelingLayout.elementsNumInLens = elementsNumInLens;
     computeExcentricLabelingLayout.radius = radius;
     computeExcentricLabelingLayout.maxLabelsNum = maxLabelsNum;
     computeExcentricLabelingLayout.labelWidth = labelWidth;
@@ -182,11 +191,14 @@ export default function excentricLabeling(): Computor {
     return computeExcentricLabelingLayout;
 }
 
-function filterObjInLens(rawInfos: RawInfo[], cx: number, cy: number, r: number) {
+/**
+ * RNN Search
+ */
+function filterElementsInLens(rawInfos: RawInfo[], cx: number, cy: number, r: number) {
     return rawInfos.filter(rawInfo => Math.sqrt((rawInfo.x - cx) ** 2 + (rawInfo.y - cy) ** 2) <= r);
 }
 
-function filterObjWithMaxNumber(rawInfos: RawInfo[], maxLabelsNum: number) {
+function filterElementsWithMaxNumber(rawInfos: RawInfo[], maxLabelsNum: number) {
     return rawInfos.slice(0, maxLabelsNum);
 }
 
