@@ -57,7 +57,7 @@ interface Computer {
  * Paper link: https://dl.acm.org/doi/abs/10.1145/302979.303148
  * @returns Computed position for each label
  */
-module.exports =  function excentricLabeling(): Computer {
+export default function excentricLabeling(): Computer {
     let _radius = 20;
     let _maxLabelsNum = 10;
     let _verticallyCoherent = true;
@@ -76,9 +76,7 @@ module.exports =  function excentricLabeling(): Computer {
         filteredRawInfos = filterElementsWithMaxNumber(filteredRawInfos, _maxLabelsNum);
         const layoutInfos = initLayoutInfos(filteredRawInfos, _labelWidth, _labelHeight);
         computeStartPoints(layoutInfos);
-        if (!_verticallyCoherent) {
-            computePointsOnLens(layoutInfos, cx, cy, _radius);
-        }
+        if (!_verticallyCoherent) computePointsOnLens(layoutInfos, cx, cy, _radius);
         dividedIntoLeftOrRight(layoutInfos, cx, cy);
         computeMiddlePoints(layoutInfos, cx, cy, _radius, _spaceBetweenLabels, _leftSpace, _rightSpace);
         computeEndPoints(layoutInfos, cx, _horizontallyCoherent);

@@ -1,13 +1,12 @@
 {
   "name": "excentric-labeling",
-  "version": "2.1.0",
+  "version": "1.0.0",
   "description": "An layout algorithm about the exentric labeling interaction technique",
   "type":"commonjs",
   "main": "dist/index.js",
   "types": "dist/@types/index.d.ts",
   "url": "https://github.com/VirusPC/excentric-labeling",
   "email": "cheng.peng.helloworld@gmail.com",
-  "files": ["dist/", "package.json", "README.md"],
   "repository": {
     "type": "git",
     "url": "https://github.com/VirusPC/excentric-labeling"

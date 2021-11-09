@@ -8,6 +8,9 @@ module.exports = {
         path: path.resolve(__dirname, "../dist"), // 根目录
         filename: "index.js",
         publicPath: "/",
+        library: "excentricLabeling",
+        libraryTarget: "umd",
+        globalObject: "this"
     },
 
     module: {
@@ -18,11 +21,11 @@ module.exports = {
                 exclude: /node_modules/,
                 use: "ts-loader",
             },
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: "babel-loader"
-            }
+            // {
+            //     test: /\.js$/,
+            //     exclude: /node_modules/,
+            //     use: "babel-loader"
+            // }
         ],
     },
     resolve: {

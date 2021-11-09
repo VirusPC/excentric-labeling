@@ -3,6 +3,7 @@
 /config/
 /coverage/
 /node_modules/
+/readme-images/
 /jest.config.js
 /.gitignore
 /tsconfig.json

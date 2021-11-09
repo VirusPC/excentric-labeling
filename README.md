@@ -6,6 +6,34 @@ Paper link: https://dl.acm.org/doi/abs/10.1145/302979.303148
 
 ![demo](https://raw.githubusercontent.com/VirusPC/excentric-labeling/master/readme-images/demo.png)
 
+## Installation
+
+### Browser
+
+```html
+<script src="https://unpkg.com/swipe-event-listener@1.2.1/dist/swipe-event-listener.js"></script>
+```
+
+Then anywhere in your JavaScript code.
+
+`const excentricLabeling = window.excentricLabeling`
+
+### Via NPM
+
+`npm i excentric-labeling`
+
+Then anywhere in your code.
+
+```js
+import excentricLabeling from "excentricLabeling"
+```
+
+OR
+
+```js
+const excentricLabeling = require("excentric-labeling");
+```
+
 ## Usage
 
 ### Example
@@ -64,30 +92,33 @@ type LayoutInfo = {
 After the computor is created, users can configure it or get configuration information through the following API. If you provide no paramter, it will return the corresponding setting's value. Otherwise, it will set the corresponding setting's value with the given parameter, and return the computor itself to facilitate method chaining.
 
 ```ts
-interface Computor {
-    (rawInfos: RawInfo[], cx: number, cy: number): LayoutInfo[];
+interface Computer {
+    // if isInfosFiltered equals true, then computer will filter out the elements outside the lens
+    (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered: boolean): LayoutInfo[];
+    elementsNumInLens: (() => number);
     labelWidth: (() => number)
-        & ((size: number) => Computor);
+        & ((size: number) => Computer);
     labelHeight: (() => number)
-        & ((size: number) => Computor);
+        & ((size: number) => Computer);
     radius: (() => number)
-        & ((radius: number) => Computor);
+        & ((radius: number) => Computer);
     maxLabelsNum: (() => number)
-        & ((maxLabelsNum: number) => Computor);
+        & ((maxLabelsNum: number) => Computer);
     verticallyCoherent: (() => boolean)
-        & ((verticallyCoherent: boolean) => Computor);
+        & ((verticallyCoherent: boolean) => Computer);
     horizontallyCoherent: (() => boolean)
-        & ((horizontallyCoherent: boolean) => Computor);
+        & ((horizontallyCoherent: boolean) => Computer);
     spaceBetweenLabels: (() => number)
-        & ((spaceBetweenLabels: number) => Computor);
+        & ((spaceBetweenLabels: number) => Computer);
     leftSpace: (() => number)
-        & ((space: number) => Computor);
+        & ((space: number) => Computer);
     rightSpace: (() => number)
-        & ((space: number) => Computor);
+        & ((space: number) => Computer);
     leftAndRightSpace: (() => [number, number])
-        & ((space: number) => Computor) 
-        & ((space: [number, number]) => Computor);
+        & ((space: number) => Computer) 
+        & ((space: [number, number]) => Computer);
 }
+
 ```
 
 ## Notes
