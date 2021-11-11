@@ -1,8 +1,8 @@
 {
   "name": "excentric-labeling",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "An layout algorithm about the exentric labeling interaction technique",
-  "type":"commonjs",
+  "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/@types/index.d.ts",
   "url": "https://github.com/VirusPC/excentric-labeling",
@@ -38,8 +38,5 @@
     "webpack": "^5.49.0",
     "webpack-cli": "^4.7.2",
     "webpack-merge": "^5.8.0"
-  },
-  "dependencies": {
-    "excentric-labeling": "^2.1.0"
   }
 }

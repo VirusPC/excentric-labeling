@@ -11,12 +11,14 @@ Paper link: https://dl.acm.org/doi/abs/10.1145/302979.303148
 ### Browser
 
 ```html
-<script src="https://unpkg.com/swipe-event-listener@1.2.1/dist/swipe-event-listener.js"></script>
+<script src="https://unpkg.com/excentric-labeling@3.0.0/dist/index.js"></script>
 ```
 
 Then anywhere in your JavaScript code.
 
-`const excentricLabeling = window.excentricLabeling`
+`js
+const excentricLabeling = window.excentricLabeling
+`
 
 ### Via NPM
 
