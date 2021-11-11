@@ -29,9 +29,9 @@ type LayoutInfo = {
 interface Computer {
     (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered: boolean): LayoutInfo[];
     elementsNumInLens: (() => number);
-    labelWidth: (() => number)
+    defaultLabelWidth: (() => number)
         & ((size: number) => Computer);
-    labelHeight: (() => number)
+    defaultLabelHeight: (() => number)
         & ((size: number) => Computer);
     radius: (() => number)
         & ((radius: number) => Computer);
@@ -65,8 +65,8 @@ export default function excentricLabeling(): Computer {
     let _spaceBetweenLabels = 3;
     let _leftSpace = 20;
     let _rightSpace = 20;
-    let _labelWidth = 20;
-    let _labelHeight = 10;
+    let _defaultLabelWidth = 20;
+    let _defaultLabelHeight = 10;
     let _elementsNumInLens = 0;
 
     const computeExcentricLabelingLayout: Computer = (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered:boolean = false) => {
@@ -74,7 +74,7 @@ export default function excentricLabeling(): Computer {
         if(!isInfosFiltered) filteredRawInfos = filterElementsInLens(filteredRawInfos, cx, cy, _radius);
         _elementsNumInLens = filteredRawInfos.length;
         filteredRawInfos = filterElementsWithMaxNumber(filteredRawInfos, _maxLabelsNum);
-        const layoutInfos = initLayoutInfos(filteredRawInfos, _labelWidth, _labelHeight);
+        const layoutInfos = initLayoutInfos(filteredRawInfos, _defaultLabelWidth, _defaultLabelHeight);
         computeStartPoints(layoutInfos);
         if (!_verticallyCoherent) computePointsOnLens(layoutInfos, cx, cy, _radius);
         dividedIntoLeftOrRight(layoutInfos, cx, cy);
@@ -88,19 +88,19 @@ export default function excentricLabeling(): Computer {
         return _elementsNumInLens;
     }
 
-    function labelWidth(): number;
-    function labelWidth(labelWidth: number): Computer;
-    function labelWidth(labelWidth?: number) {
-        if (labelWidth === undefined) return _labelWidth;
-        _labelWidth = labelWidth;
+    function defaultLabelWidth(): number;
+    function defaultLabelWidth(defaultLabelWidth: number): Computer;
+    function defaultLabelWidth(defaultLabelWidth?: number) {
+        if (defaultLabelWidth === undefined) return _defaultLabelWidth;
+        _defaultLabelWidth = defaultLabelWidth;
         return computeExcentricLabelingLayout;
     };
 
-    function labelHeight(): number;
-    function labelHeight(labelHeight: number): Computer;
-    function labelHeight(labelHeight?: number) {
-        if (labelHeight === undefined) return _labelHeight;
-        _labelHeight = labelHeight;
+    function defaultLabelHeight(): number;
+    function defaultLabelHeight(defaultLabelHeight: number): Computer;
+    function defaultLabelHeight(defaultLabelHeight?: number) {
+        if (defaultLabelHeight === undefined) return _defaultLabelHeight;
+        _defaultLabelHeight = defaultLabelHeight;
         return computeExcentricLabelingLayout;
     };
 
@@ -177,8 +177,8 @@ export default function excentricLabeling(): Computer {
     computeExcentricLabelingLayout.elementsNumInLens = elementsNumInLens;
     computeExcentricLabelingLayout.radius = radius;
     computeExcentricLabelingLayout.maxLabelsNum = maxLabelsNum;
-    computeExcentricLabelingLayout.labelWidth = labelWidth;
-    computeExcentricLabelingLayout.labelHeight = labelHeight;
+    computeExcentricLabelingLayout.defaultLabelWidth = defaultLabelWidth;
+    computeExcentricLabelingLayout.defaultLabelHeight = defaultLabelHeight;
     computeExcentricLabelingLayout.verticallyCoherent = verticallyCoherent;
     computeExcentricLabelingLayout.horizontallyCoherent = horizontallyCoherent;
     computeExcentricLabelingLayout.spaceBetweenLabels = spaceBetweenLabels;
@@ -200,12 +200,12 @@ function filterElementsWithMaxNumber(rawInfos: RawInfo[], maxLabelsNum: number) 
     return rawInfos.slice(0, maxLabelsNum);
 }
 
-function initLayoutInfos(rawInfos: RawInfo[], _labelWidth: number, _labelHeight: number): LayoutInfo[] {
-    return rawInfos.map((rawInfo) => initLayoutInfo(rawInfo, _labelWidth, _labelHeight));
+function initLayoutInfos(rawInfos: RawInfo[], _defaultLabelWidth: number, _defaultLabelHeight: number): LayoutInfo[] {
+    return rawInfos.map((rawInfo) => initLayoutInfo(rawInfo, _defaultLabelWidth, _defaultLabelHeight));
 }
 
-function initLayoutInfo(rawInfo: RawInfo, _labelWidth: number, _labelHeight: number): LayoutInfo {
-    const { x, y, labelWidth, labelHeight } = rawInfo
+function initLayoutInfo(rawInfo: RawInfo, _defaultLabelWidth: number, _defaultLabelHeight: number): LayoutInfo {
+    const { x, y, defaultLabelWidth, defaultLabelHeight } = rawInfo
     return {
         x, y,
         //name: labelName,
@@ -214,8 +214,8 @@ function initLayoutInfo(rawInfo: RawInfo, _labelWidth: number, _labelHeight: num
         labelBBox: {
             x: 0,
             y: 0,
-            width: labelWidth ?? _labelWidth,
-            height: labelHeight ?? _labelHeight,
+            width: defaultLabelWidth ?? _defaultLabelWidth,
+            height: defaultLabelHeight ?? _defaultLabelHeight,
         },
         rawInfo: rawInfo
     }

@@ -50,8 +50,8 @@ declare const x: number;
 declare const y: number;
 
 const computor: Computor = excentricLabeling();
-computor.labelWidth(20)
-    .labelHeight(5)
+computor.defaultLabelWidth(20)
+    .defaultLabelHeight(5)
     .radius(10)
 
 const result= computor(rawData, x, y)
@@ -59,7 +59,7 @@ const result= computor(rawData, x, y)
 
 ### Input
 
-`RawInfo[]`, the position of points. User can specify the width and/or height for the point. Otherwise, the algorithm will use the width and height from settings: `computor.labelWidth(20)`, `computor.labelHeight(10)`.
+`RawInfo[]`, the position of points. User can specify the width and/or height for the point. Otherwise, the algorithm will use the width and height from settings: `computor.defaultLabelWidth(20)`, `computor.defaultLabelHeight(10)`.
 
 ```ts
 type RawInfo = {
@@ -100,9 +100,9 @@ interface Computer {
     // if isInfosFiltered equals true, then computer will filter out the elements outside the lens
     (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered: boolean): LayoutInfo[];
     elementsNumInLens: (() => number);
-    labelWidth: (() => number)
+    defaultLabelWidth: (() => number)
         & ((size: number) => Computer);
-    labelHeight: (() => number)
+    defaultLabelHeight: (() => number)
         & ((size: number) => Computer);
     radius: (() => number)
         & ((radius: number) => Computer);
