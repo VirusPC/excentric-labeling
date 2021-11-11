@@ -1,8 +1,10 @@
 # Excentric Labeling
 
-A layout algorithm about excentric labeling.
+[![](https://img.shields.io/npm/l/excentric-labeling?registry_uri=https%3A%2F%2Fregistry.npmjs.com)](https://github.com/VirusPC/excentric-labeling/blob/master/LICENSE)
 
-Paper link: https://dl.acm.org/doi/abs/10.1145/302979.303148
+## Introduction
+
+**Excentric Labeling** is a labeling technique, which is presented by [Jean-Daniel Fekete](https://scholar.google.com/citations?user=PMZ3h7sAAAAJ&hl=en&oi=sra) and [Catherine Plaisant](https://scholar.google.com/citations?user=VnwWgwIAAAAJ&hl=en&oi=sra) in this [paper](https://dl.acm.org/doi/abs/10.1145/302979.303148). In this repository, we implement the layout algorithm about it.
 
 ![demo](https://raw.githubusercontent.com/VirusPC/excentric-labeling/master/readme-images/demo.png)
 
