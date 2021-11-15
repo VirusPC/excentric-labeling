@@ -205,7 +205,7 @@ function initLayoutInfos(rawInfos: RawInfo[], _defaultLabelWidth: number, _defau
 }
 
 function initLayoutInfo(rawInfo: RawInfo, _defaultLabelWidth: number, _defaultLabelHeight: number): LayoutInfo {
-    const { x, y, defaultLabelWidth, defaultLabelHeight } = rawInfo
+    const { x, y, labelWidth, labelHeight } = rawInfo
     return {
         x, y,
         //name: labelName,
@@ -214,8 +214,8 @@ function initLayoutInfo(rawInfo: RawInfo, _defaultLabelWidth: number, _defaultLa
         labelBBox: {
             x: 0,
             y: 0,
-            width: defaultLabelWidth ?? _defaultLabelWidth,
-            height: defaultLabelHeight ?? _defaultLabelHeight,
+            width: labelWidth ?? _defaultLabelWidth,
+            height: labelHeight ?? _defaultLabelHeight,
         },
         rawInfo: rawInfo
     }
