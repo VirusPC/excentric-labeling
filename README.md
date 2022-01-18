@@ -13,7 +13,7 @@
 ### Browser
 
 ```html
-<script src="https://unpkg.com/excentric-labeling@3.0.0/dist/index.js"></script>
+<script src="https://unpkg.com/excentric-labeling@3.0.2/dist/index.js"></script>
 ```
 
 Then anywhere in your JavaScript code.
@@ -73,21 +73,21 @@ type RawInfo = {
 
 ### Output:
 
-`LayoutInfo[]`
+The function will return `LayoutInfo[]`. For one `LayoutInfo`, it includes the necessaray infomation about one point in the visualization. 
 
 ```ts
 type LayoutInfo = {
-    x: number,
-    y: number,
-    left: boolean,
-    controlPoints: {x: number, y: number}[],
-    labelBBox: {
+    x: number,  // x coordinate of the point
+    y: number,  // y coordinate of the point
+    left: boolean,  // If true, the label of this point should be on the left of this point.
+    controlPoints: {x: number, y: number}[],  // Control points of the line which connect point and label
+    labelBBox: {  // The Bounding Box of label
         x: number,
         y: number,
         width: number,
         height: number
     },
-    rawInfo: RawInfo
+    rawInfo: RawInfo  // The original input infomation of this point.
 };
 ```
 
