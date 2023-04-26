@@ -8,6 +8,11 @@
 
 ![demo](https://raw.githubusercontent.com/VirusPC/excentric-labeling/master/readme-images/demo.png)
 
+## Live Demo
+- [live demo](https://excentric-labeling-react.vercel.app/)
+- [source code](https://github.com/VirusPC/excentric-labeling-react) 
+- [interaction part in source code](https://github.com/VirusPC/excentric-labeling-react/blob/master/src/components/excentric-labeling.js)
+
 ## Installation
 
 ### Browser
