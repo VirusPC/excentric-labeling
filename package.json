@@ -1,6 +1,6 @@
 {
   "name": "excentric-labeling",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "An layout algorithm about the exentric labeling interaction technique",
   "type": "commonjs",
   "main": "dist/index.js",

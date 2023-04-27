@@ -73,7 +73,7 @@ type RawInfo = {
 
 ### Output:
 
-The function will return `LayoutInfo[]`. For one `LayoutInfo`, it includes the necessaray infomation about one point in the visualization. 
+The function will return `LayoutInfo[]`. For one `LayoutInfo`, it includes the necessaray infomation about one point in the visualization. Furthermore, it is sorted in ascending order by the distance from itself to the query point.
 
 ```ts
 type LayoutInfo = {
@@ -97,30 +97,31 @@ After the computor is created, users can configure it or get configuration infor
 
 ```ts
 interface Computer {
-    // if isInfosFiltered equals true, then computer will filter out the elements outside the lens
-    (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered: boolean): LayoutInfo[];
+    // if `isInfosFiltered` equals `false`, then computer will filter out the elements outside the lens
+    (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered?: boolean): LayoutInfo[];
+    elementsInLens: (() => RawInfo[]);
     elementsNumInLens: (() => number);
     defaultLabelWidth: (() => number)
-        & ((size: number) => Computer);
+    & ((size: number) => Computer);
     defaultLabelHeight: (() => number)
-        & ((size: number) => Computer);
+    & ((size: number) => Computer);
     radius: (() => number)
-        & ((radius: number) => Computer);
+    & ((radius: number) => Computer);
     maxLabelsNum: (() => number)
-        & ((maxLabelsNum: number) => Computer);
+    & ((maxLabelsNum: number) => Computer);
     verticallyCoherent: (() => boolean)
-        & ((verticallyCoherent: boolean) => Computer);
+    & ((verticallyCoherent: boolean) => Computer);
     horizontallyCoherent: (() => boolean)
-        & ((horizontallyCoherent: boolean) => Computer);
+    & ((horizontallyCoherent: boolean) => Computer);
     spaceBetweenLabels: (() => number)
-        & ((spaceBetweenLabels: number) => Computer);
+    & ((spaceBetweenLabels: number) => Computer);
     leftSpace: (() => number)
-        & ((space: number) => Computer);
+    & ((space: number) => Computer);
     rightSpace: (() => number)
-        & ((space: number) => Computer);
+    & ((space: number) => Computer);
     leftAndRightSpace: (() => [number, number])
-        & ((space: number) => Computer) 
-        & ((space: [number, number]) => Computer);
+    & ((space: number) => Computer)
+    & ((space: [number, number]) => Computer);
 }
 
 ```
