@@ -1,4 +1,4 @@
-type RawInfo = {
+export type RawInfo = {
     x: number,
     y: number,
     labelWidth?: number,  // Optional. If setted, it will override the settings of the computer
@@ -6,11 +6,11 @@ type RawInfo = {
     [redundantProp: string]: any,
 };
 
-type LayoutInfo = {
+export type LayoutInfo = {
     x: number,
     y: number,
     left: boolean,  // indicate if label on the left or right
-    controlPoints: { x:number, y: number}[],
+    controlPoints: { x: number, y: number }[],
     labelBBox: {
         x: number,
         y: number,
@@ -27,29 +27,30 @@ type LayoutInfo = {
 // type GetOrSetParamFunc<T> = GetParamFunc<T> & SetParamFunc<T>;
 
 interface Computer {
-    (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered: boolean): LayoutInfo[];
+    (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered?: boolean): LayoutInfo[];
+    elementsInLens: (() => RawInfo[]);
     elementsNumInLens: (() => number);
     defaultLabelWidth: (() => number)
-        & ((size: number) => Computer);
+    & ((size: number) => Computer);
     defaultLabelHeight: (() => number)
-        & ((size: number) => Computer);
+    & ((size: number) => Computer);
     radius: (() => number)
-        & ((radius: number) => Computer);
+    & ((radius: number) => Computer);
     maxLabelsNum: (() => number)
-        & ((maxLabelsNum: number) => Computer);
+    & ((maxLabelsNum: number) => Computer);
     verticallyCoherent: (() => boolean)
-        & ((verticallyCoherent: boolean) => Computer);
+    & ((verticallyCoherent: boolean) => Computer);
     horizontallyCoherent: (() => boolean)
-        & ((horizontallyCoherent: boolean) => Computer);
+    & ((horizontallyCoherent: boolean) => Computer);
     spaceBetweenLabels: (() => number)
-        & ((spaceBetweenLabels: number) => Computer);
+    & ((spaceBetweenLabels: number) => Computer);
     leftSpace: (() => number)
-        & ((space: number) => Computer);
+    & ((space: number) => Computer);
     rightSpace: (() => number)
-        & ((space: number) => Computer);
+    & ((space: number) => Computer);
     leftAndRightSpace: (() => [number, number])
-        & ((space: number) => Computer) 
-        & ((space: [number, number]) => Computer);
+    & ((space: number) => Computer)
+    & ((space: [number, number]) => Computer);
 }
 
 /**
@@ -67,14 +68,15 @@ export default function excentricLabeling(): Computer {
     let _rightSpace = 20;
     let _defaultLabelWidth = 20;
     let _defaultLabelHeight = 10;
-    let _elementsNumInLens = 0;
+    let _elementsInLens: RawInfo[] = [];
 
-    const computeExcentricLabelingLayout: Computer = (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered:boolean = false) => {
+    const computeExcentricLabelingLayout: Computer = (rawInfos: RawInfo[], cx: number, cy: number, isInfosFiltered: boolean = false) => {
         let filteredRawInfos = rawInfos;
-        if(!isInfosFiltered) filteredRawInfos = filterElementsInLens(filteredRawInfos, cx, cy, _radius);
-        _elementsNumInLens = filteredRawInfos.length;
-        filteredRawInfos = filterElementsWithMaxNumber(filteredRawInfos, _maxLabelsNum);
-        const layoutInfos = initLayoutInfos(filteredRawInfos, _defaultLabelWidth, _defaultLabelHeight);
+        if (!isInfosFiltered) filteredRawInfos = filterElementsInLens(filteredRawInfos, cx, cy, _radius);
+        sortRawInfosByDistance({ x: cx, y: cy }, filteredRawInfos);
+        _elementsInLens = filteredRawInfos;
+        const filteredRawInfosWithNumLimit = filterElementsWithMaxNumber(filteredRawInfos, _maxLabelsNum);
+        const layoutInfos = initLayoutInfos(filteredRawInfosWithNumLimit, _defaultLabelWidth, _defaultLabelHeight);
         computeStartPoints(layoutInfos);
         if (!_verticallyCoherent) computePointsOnLens(layoutInfos, cx, cy, _radius);
         dividedIntoLeftOrRight(layoutInfos, cx, cy);
@@ -84,8 +86,12 @@ export default function excentricLabeling(): Computer {
         return layoutInfos;
     }
 
-    function elementsNumInLens(): number{
-        return _elementsNumInLens;
+    function elementsNumInLens(): number {
+        return _elementsInLens.length;
+    }
+
+    function elementsInLens(): RawInfo[] {
+        return _elementsInLens;
     }
 
     function defaultLabelWidth(): number;
@@ -175,6 +181,7 @@ export default function excentricLabeling(): Computer {
     };
 
     computeExcentricLabelingLayout.elementsNumInLens = elementsNumInLens;
+    computeExcentricLabelingLayout.elementsInLens = elementsInLens;
     computeExcentricLabelingLayout.radius = radius;
     computeExcentricLabelingLayout.maxLabelsNum = maxLabelsNum;
     computeExcentricLabelingLayout.defaultLabelWidth = defaultLabelWidth;
@@ -205,7 +212,7 @@ function initLayoutInfos(rawInfos: RawInfo[], _defaultLabelWidth: number, _defau
 }
 
 function initLayoutInfo(rawInfo: RawInfo, _defaultLabelWidth: number, _defaultLabelHeight: number): LayoutInfo {
-    const { x, y, defaultLabelWidth, defaultLabelHeight } = rawInfo
+    const { x, y, labelWidth: defaultLabelWidth, labelHeight: defaultLabelHeight } = rawInfo
     return {
         x, y,
         //name: labelName,
@@ -313,4 +320,14 @@ function computeLabelBBox(layoutInfos: LayoutInfo[]) {
         bbox.x = lastControlPoint.x + (layoutInfo.left ? -bbox.width : 0);
         bbox.y = lastControlPoint.y - (layoutInfo.labelBBox.height >> 1);
     });
+}
+
+
+function sortRawInfosByDistance(center: { x: number, y: number }, points: RawInfo[]): RawInfo[] {
+    points.sort((point1, point2) => distance(center, point1) - distance(center, point2));
+    return points;
+}
+
+function distance(point1: { x: number, y: number }, point2: { x: number, y: number }) {
+    return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2);
 }
