@@ -11,7 +11,7 @@
 ## Live Demo
 - [live demo](https://excentric-labeling-react.vercel.app/)
 - [source code](https://github.com/VirusPC/excentric-labeling-react) 
-- [interaction part in source code](https://github.com/VirusPC/excentric-labeling-react/blob/master/src/components/excentric-labeling.js)
+- out-of-box [interaction helper function](https://github.com/VirusPC/excentric-labeling-react/blob/master/src/helpers/excentric-labeling-interaction.ts), which combines excentric-labeling algrithom, rendering and event handler.
 
 ## Installation
 
